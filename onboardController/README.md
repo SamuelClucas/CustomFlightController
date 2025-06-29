@@ -57,16 +57,16 @@ The TelemetryRelay system relays structured messages over UART. This allows real
 - PID error terms and motor outputs
 - Sensor error/reject counts
 
-Status  
+## Status  
 - Untethered test flight completed
 ️- Crash occurred due to triggered over-tilt safety
 ️- Ground station (code named Amygdala) is under separate development
 - No onboard logging yet; UART telemetry only
 
-Author 
+## Author 
 Samuel Clucas 
 Durham University (BSc, Biological Sciences, First Class) 
 Incoming MRes student – Biomedical Data Science, Imperial College London
 
-Purpose 
+## Purpose 
 This firmware was developed to understand the low-level dynamics of drone flight and embedded system design. No libraries or frameworks beyond the Raspberry Pi Pico SDK were used. Everything — from sensor calibration routines to UART telemetry and actuator control — was written from scratch to solidify embedded C++ fluency and systems engineering principles.
