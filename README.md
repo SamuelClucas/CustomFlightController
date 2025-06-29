@@ -1,5 +1,7 @@
 # Engineering a Drone Flight Controller
-I worked on this project between February to early-April 2025. I developed a fascination for embedded programming and set out to implement a perception-to-action flight model on a drone running my own flight controller firmware. While I only managed a single, brief, maiden flight in this time, I learned so much and deeply enjoyed doing so.
+I worked on this project between February to early-April 2025. I developed a fascination for embedded programming and set out to implement a perception-to-action flight model on a drone running my own flight controller firmware. While I only managed a single, brief, maiden flight in this time, I learned so much and deeply enjoyed doing so. Note: I had **very** limited resources for this project.
+
+<img src="./lib/drone.jpg" width="300" height="300">
 
 ## Ground Control Station 
 
@@ -57,7 +59,7 @@ Future versions may include:
 - A minimal dashboard
 
 ## Maiden Flight 
-The drone flew untethered during its maiden test before triggering an overtilt-safety cutoff. A short telemetry log is included.
+The drone flew untethered during its maiden test before triggering an overtilt-safety cutoff. A short [telemetry log](./lib/maiden_flight.md) is included.
 
 A video and photo of the flight are available in the lib/ directory (this was a special moment!).
 
