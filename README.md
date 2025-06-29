@@ -3,6 +3,25 @@ I worked on this project between February to early-April 2025. I developed a fas
 
 <img src="./lib/drone.jpg" width="400" height="300">
 
+This repository contains the embedded firmware for a custom quadcopter drone, written in C++ and designed to run on the Raspberry Pi Pico (RP2040) microcontroller. The project was developed as a self-directed systems engineering exercise in low-level control loops, real-time sensor fusion, and telemetry-driven feedback. The firmware was successfully tested on a partially salvaged Holybro S500 V2 frame with custom braided copper power wiring—
+
+<img src="./lib/braids.jpg">
+
+—and custom-built power circuitry:
+
+<img src="./lib/dodgyElectrics.jpg">
+
+<img src="./lib/chaos.jpg">
+
+## Maiden Flight 
+The drone flew untethered during its maiden test before triggering my overtilt-safety cutoff. A short [telemetry log](./lib/maiden_flight.md) is included.
+
+A video and photo of the flight are available in the lib/ directory (this was a special moment!).
+
+[![Watch the maiden flight](lib/flight_thum.png)](lib/maiden_flight.mp4) 
+
+(volume warning!)
+
 ## Ground Control Station 
 
 Terminal-based real-time telemetry parser and state monitor for autonomous flight experiments
@@ -57,15 +76,6 @@ Future versions may include:
 - Logging
 - Signal quality monitoring
 - A minimal dashboard
-
-## Maiden Flight 
-The drone flew untethered during its maiden test before triggering an overtilt-safety cutoff. A short [telemetry log](./lib/maiden_flight.md) is included.
-
-A video and photo of the flight are available in the lib/ directory (this was a special moment!).
-
-[![Watch the maiden flight](lib/flight_thum.png)](lib/maiden_flight.mp4) 
-
-(volume warning!)
 
 ## Author 
 Samuel Clucas
