@@ -31,13 +31,17 @@ This implementation prioritizes minimal latency, code transparency, and terminal
 
 ### ./src/
 
-- main.cpp:	Launches the ground control terminal interface. Initializes and supervises the Receiver class, handling graceful shutdown on interrupt. Acts as the entry point for the monitoring software. 
-- receiver.cpp:	Manages serial input via UART (e.g., from the drone). Parses incoming telemetry data at 57600 baud, prints to console with ANSI styling, and handles interrupt signals.
+| File           | Description                                                                                                                                                           |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `main.cpp`     | Entry point for the ground control terminal. Initializes the `Receiver` class, begins UART telemetry monitoring, and handles graceful shutdown via signal interrupts. |
+| `receiver.cpp` | Implements the `Receiver` class logic. Reads incoming telemetry over UART (57600 baud), formats output with ANSI terminal styling, and listens for shutdown signals.  |
 
 ### ./include/ 
 
-- receiver.h	Declares the Receiver class. Encapsulates state management and parsing logic for UART telemetry from the drone. Implements a singleton pattern to coordinate signal handling. 
-- shared_state.h	Shared global state used across modules (e.g., std::atomic<bool> online). Used to communicate shutdown signals across threads safely.
+| File             | Description                                                                                                                                                                     |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `receiver.h`     | Declares the `Receiver` class used for UART telemetry processing. Encapsulates state handling and parsing logic. Implements a singleton pattern for coordinated signal control. |
+| `shared_state.h` | Defines shared global flags (e.g., `std::atomic<bool> online`) used for inter-thread communication and graceful termination.                                                    |
 
 ### lib/	
 
