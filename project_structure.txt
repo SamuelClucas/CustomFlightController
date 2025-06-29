@@ -1,0 +1,27 @@
+.
+├── include
+│   ├── amygdala.h
+│   └── shared_state.h
+├── Makefile
+├── onboardController
+│   ├── CMakeLists.txt
+│   ├── include
+│   │   ├── act.h
+│   │   ├── radio_receiver.h
+│   │   ├── sense.h
+│   │   └── telemetry.h
+│   ├── maiden_flight.md
+│   └── src
+│       ├── act.cpp
+│       ├── main.cpp
+│       ├── radio_receiver.cpp
+│       ├── sense.cpp
+│       └── telemetry.cpp
+├── project_structure.txt
+└── src
+    ├── amygdala.cpp
+    ├── amygdala.o
+    ├── Observer.cpp
+    └── Observer.o
+
+6 directories, 19 files

@@ -11,15 +11,15 @@
 
 #pragma once
 
-class Amygdala {
+class Receiver {
     private:
     enum class State {
-        AWAKE,
-        READING,
+        ONLINE,
+        PARSING,
     };
 
     State currentState;
-    static Amygdala* instance;  
+    static Receiver* instance;  
 
     public:
     int fd;
@@ -28,11 +28,11 @@ class Amygdala {
     struct termios tty{}; // termios struct used to reconfigure character device attributes
 
 
-    Amygdala();
-    ~Amygdala();
+    Receiver();
+    ~Receiver();
     static void handleInterrupt(int signal);
-    void reading();
-    void rest();
+    void parsing();
+    void shutdown();
     std::string to_string(State s);
     State announce();
 };

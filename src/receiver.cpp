@@ -3,7 +3,7 @@
 #include <string>
 #include <chrono>
 #include <thread>
-#include "amygdala.h"
+#include "receiver.h"
 #include <fstream>
 #include <fcntl.h>
 #include <termios.h>
@@ -11,28 +11,28 @@
 #include <csignal>
 #include <atomic>
 
-extern std::atomic<bool> conscious;  // shared with main
-Amygdala* Amygdala::instance = nullptr;
+extern std::atomic<bool> online;  // shared with main
+Receiver* Receiver::instance = nullptr;
 
-void Amygdala::handleInterrupt(int signal) {
-    conscious = false;
+void Receiver::handleInterrupt(int signal) {
+    online = false;
 }
 
-Amygdala::Amygdala() {
+Receiver::Receiver() {
     instance = this;
-    currentState = State::AWAKE;
+    currentState = State::ONLINE;
     std::signal(SIGINT, handleInterrupt);
 }
 
-Amygdala::~Amygdala() {
+Receiver::~Receiver() {
 }
 
-void Amygdala::rest(){
-    std::cout << "\033[1;31mThe amygdala now rests...\033[0m" << std::endl;
+void Receiver::shutdown(){
+    std::cout << "\033[1;31mReceiver shutting down...\033[0m" << std::endl;
 }
 
-void Amygdala::reading() {
-    currentState = State::READING;
+void Receiver::parsing() {
+    currentState = State::PARSING;
 
     fd = open("/dev/ttyUSB0", O_RDWR | O_NOCTTY | O_NDELAY);
     if (fd == -1) {
@@ -68,8 +68,8 @@ void Amygdala::reading() {
     }
 
     fcntl(fd, F_SETFL, 0);
-    std::cout << "Now reading..." << std::endl;
-    while (conscious) {
+    std::cout << "Parsing incoming signal..." << std::endl;
+    while (online) {
         n = read(fd, buf, sizeof(buf) - 1);
         if (n > 0) {
             buf[n] = '\0';
@@ -78,22 +78,22 @@ void Amygdala::reading() {
         std::this_thread::sleep_for(std::chrono::milliseconds(10)); // avoid tight loop
     }
 
-    std::cout << "\n\033[1;33mExiting reading loop.\033[0m\n";
+    std::cout << "\n\033[1;33mExiting parsing loop.\033[0m\n";
     close(fd);
     fd = -1;
 }
 
 
-std::string Amygdala::to_string(Amygdala::State s) {
+std::string Receiver::to_string(Receiver::State s) {
     switch(s) {
-        case State::AWAKE: return "AWAKE";
-        case State::READING: return "READING";
+        case State::ONLINE: return "ONLINE";
+        case State::PARSING: return "PARSING";
         default: return "UNKNOWN";
     }
 }
 
-Amygdala::State Amygdala::announce(){
-    std::cout << "\033[1;32mAmygdala is " << to_string(currentState) << "\033[0m" << std::endl;
+Receiver::State Receiver::announce(){
+    std::cout << "\033[1;32mReceiver state: " << to_string(currentState) << "\033[0m" << std::endl;
     return currentState;
 }
 

@@ -1,4 +1,4 @@
 #pragma once
 #include <atomic>
 
-extern std::atomic<bool> conscious;
+extern std::atomic<bool> online;
