@@ -1,12 +1,12 @@
-#include "telemetry.h"
-#include "radio_receiver.h"
-#include "act.h"
+#include "telemetryRelay.h"
+#include "radioReceiver.h"
+#include "motorController.h"
 #include "pico/stdlib.h"
 #include "hardware/uart.h"
 #include "hardware/gpio.h"
 #include <cstdint>
 
-Receiver::Receiver() {
+RadioReceiver::RadioReceiver() {
     boot_time = time_us_64();
 
     uart_init(uart0, 115200);
@@ -23,11 +23,12 @@ Receiver::Receiver() {
     
 }
 
-Receiver::~Receiver() {
+RadioReceiver::~RadioReceiver()
+{
     uart_deinit(uart0);
 }
 
-void Receiver::filter_channels(Telemetry& telemetry) {
+void RadioReceiver::filter_channels(TelemetryRelay& telemetry) {
     for (int i = 0; i < 14; i++) {
         channels_filtered[i] = 0.9f * channels_filtered[i] + 0.1f * channels[i];
     }
@@ -38,7 +39,7 @@ void Receiver::filter_channels(Telemetry& telemetry) {
     telemetry.update_telemetry("[Throttle]", "%d", throttle);
 }
 
-void Receiver::read_ibus() {
+void RadioReceiver::read_ibus() {
     uint64_t now = time_us_64();
 
     while (uart_is_readable(uart0)) {
@@ -72,14 +73,14 @@ void Receiver::read_ibus() {
         }
     }
 
-    // 🛡️ Resync if stalled mid-frame
+    // Resync if stalled mid-frame
     static int failed_count = 0;
     if (++failed_count >= 10) {
         failed_count = 0;
     }
 }
 
-void Receiver::fail_safe(Telemetry& telemetry, Act& act) {
+void RadioReceiver::fail_safe(TelemetryRelay& telemetry, MotorController& mController) {
     uint64_t now = time_us_64();
     // Ignore failsafe for 5 seconds after boot
     if (now - boot_time < 5000000) return;
@@ -95,19 +96,19 @@ void Receiver::fail_safe(Telemetry& telemetry, Act& act) {
         // Write timestamp
         snprintf(buffer, sizeof(buffer), "[SIGNAL_DEAD] TIME %llu\n [FOR] %llu\n [SINCE] %llu\n", now / 1000, time_since_last_update, last_radio_update);
         telemetry.send_telemetry(buffer);
-        act.disarm(telemetry);
+        mController.disarm(telemetry);
     }
 }
 
-bool Receiver::check_switch_armed(Act& act, Telemetry& telemetry) {
+bool Receiver::check_switch_armed(Act& mController, TelemetryRelay& telemetry) {
     if (channels[4] < 1300) {return true;}
     else {
-        act.disarm(telemetry);
+        mController.disarm(telemetry);
         return false;
     }
 }
 
-bool Receiver::check_altitude_switch() {
+bool RadioReceiver::check_altitude_switch() {
     // Prevent false trigger before first valid read
     static bool switch_tracking_started = false;
     static bool last_switch_state = false;
@@ -128,23 +129,28 @@ bool Receiver::check_altitude_switch() {
 }
 
 
-int Receiver::get_throttle() {
+int RadioReceiver::get_throttle() {
     return throttle;
 }
-int Receiver::get_roll() {
+int RadioReceiver::get_roll()
+{
     return roll;
 }
-int Receiver::get_pitch() {
+int RadioReceiver::get_pitch()
+{
     return pitch;
 }
-int Receiver::get_yaw() {
+int RadioReceiver::get_yaw()
+{
     return yaw;
 }
-int Receiver::get_channel(int ch) {
+int RadioReceiver::get_channel(int ch)
+{
     if (ch < 0 || ch > 13) return -1;
     return channels_filtered[ch];
 }
 
-bool Receiver::has_recent_data() const {
+bool RadioReceiver::has_recent_data() const
+{
     return (time_us_64() - last_radio_update) < timeout_us;
 }

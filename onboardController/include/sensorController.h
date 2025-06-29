@@ -1,12 +1,14 @@
-#include "telemetry.h"
+#pragma once
+
+#include "telemetryRelay.h"
+#include "radioReceiver.h"
 #include "pico/stdlib.h"
 #include "hardware/uart.h"
 #include "hardware/adc.h"
 #include "hardware/i2c.h"
 #include "hardware/gpio.h"
-#include "radio_receiver.h"
-#pragma once
-class Act;
+
+class MotorController; // forward declaration
 
 struct BMP280_Calib {
     uint16_t dig_T1;
@@ -16,7 +18,7 @@ struct BMP280_Calib {
     int16_t dig_P6, dig_P7, dig_P8, dig_P9;
 };
 
-class Sense {
+class SensorController {
     private:
         BMP280_Calib calib;
         int32_t t_fine;
@@ -60,7 +62,6 @@ class Sense {
         int accel_rejects = 0;
         int accel_uses = 0;
 
-
         static float constexpr SAFE_LANDING_DURATION_S = 5.0f;
 
         static int constexpr ADC_VOLTAGE_CH = 1;
@@ -79,9 +80,7 @@ class Sense {
         static constexpr float YAW_KI = 0.002f;
         static constexpr float YAW_KD = 0.005f;
 
-
         static constexpr float INTEGRAL_LIMIT = 20.0f; // Clamps buildup to sane corrections
-
 
         static int constexpr MIN_THROTTLE = 1020;
         static int constexpr MAX_THROTTLE = 2000;
@@ -110,16 +109,16 @@ class Sense {
         bool critically_warned = false;
         
     public:
-        Sense(Telemetry& telemetry, Act& act);
-        ~Sense();
+        SensorController(Telemetry& telemetry, Act& act);
+        ~SensorController();
 
         void init_mpu6050(Telemetry& telemetry, Act& act);
         void init_qmc5883();
         void init_bmp280();
         bool i2c_write_check(uint8_t addr, uint8_t reg, uint8_t val);
         bool i2c_read_check(uint8_t addr, uint8_t reg, uint8_t* buf, uint8_t len);
-        void update_voltage(Sense& sense, Telemetry& telemetry, Act& act, Receiver& receiver, float dt);
-        
+        void update_voltage(TelemetryRelay& telemetry);
+
         void calibrate_gyro(Act& act, Telemetry& telemetry, float dt);
         void read_mpu6050(float dt, Telemetry& telemetry);
         void read_bmp(float dt, Telemetry& telemetry);
@@ -144,5 +143,4 @@ class Sense {
         bool get_critically_warned();
         float get_yaw_angle(){return yaw_angle;};
         float get_az_f(){return az_f;}; 
-        
 };

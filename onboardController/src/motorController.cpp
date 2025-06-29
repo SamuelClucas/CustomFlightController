@@ -1,21 +1,23 @@
-#include "sense.h"
-#include "radio_receiver.h"
-#include "telemetry.h"
+#include "sensorController.h"
+#include "radioReceiver.h"
+#include "telemetryRelay.h"
+#include "motorController.h"
 #include "pico/stdlib.h"
-#include "act.h"
-#include <cmath>  
+#include <cmath>
 
-Act::Act() {
+MotorController::MotorController()
+{
     pca_ok = 0;
     allow_arm = false;
     m0 = 1000; m1 = 1000; m2 = 1000; m3 = 1000;
 }
 
-Act::~Act() {}
+MotorController::~MotorController() {}
 
 int Act::clamp(int val, int min_val, int max_val) { return val < min_val ? min_val : (val > max_val ? max_val : val); }
 
-void Act::init_pca9685(Telemetry& telemetry) {
+void MotorController::init_pca9685(TelemetryRelay& telemetry)
+{
     bool s0 = pca_write_check(0x40, 0x00, 0x10);  // Sleep
     bool s1 = pca_write_check(0x40, 0xFE, (uint8_t)(25000000 / (4096 * 50) - 1));  // Prescale
     bool s2 = pca_write_check(0x40, 0x00, 0xA1);  // Restart + Auto-Inc
@@ -27,7 +29,7 @@ void Act::init_pca9685(Telemetry& telemetry) {
 
     if (!pca_ok) disarm(telemetry);
 }
-bool Act::pca_write_check(uint8_t addr, uint8_t reg, uint8_t val) {
+bool MotorContorller::pca_write_check(uint8_t addr, uint8_t reg, uint8_t val) {
     uint8_t buf[2] = {reg, val};  // <-- critical fix: no more temporary array!
     int ret = i2c_write_blocking(i2c0, addr, buf, 2, false);
     if (ret != 2) {
@@ -37,8 +39,8 @@ bool Act::pca_write_check(uint8_t addr, uint8_t reg, uint8_t val) {
     return true;
 }
 
-    
-void Act::pca_read_check(uint8_t addr, uint8_t reg, uint8_t* buf, uint8_t len) {
+void MotorController::pca_read_check(uint8_t addr, uint8_t reg, uint8_t *buf, uint8_t len)
+{
     if (i2c_write_blocking(i2c0, addr, &reg, 1, true) != 1) { allow_arm = false; pca_ok = false; }
     if (i2c_read_blocking(i2c0, addr, buf, len, false) != len) { allow_arm = false; pca_ok = false; }
     else {
@@ -46,7 +48,8 @@ void Act::pca_read_check(uint8_t addr, uint8_t reg, uint8_t* buf, uint8_t len) {
     }
 }
 
-void Act::arm(Receiver& receiver, Telemetry& telemetry) {
+void MotorController::arm(RadioReceiver& receiver, TelemetryRelay& telemetry)
+{
     if (receiver.check_switch_armed(*this, telemetry)){
         allow_arm = true;
     }
@@ -55,13 +58,15 @@ void Act::arm(Receiver& receiver, Telemetry& telemetry) {
     }
 }
 
-void Act::kill_motors(Telemetry& telemetry) {
+void MotorController::kill_motors(TelemetryRelay& telemetry)
+{
     for (int i = 0; i < 4; i++) {
         set_pwm_us(i, 0, telemetry);
     }
 }
 
-bool Act::set_pwm_us(uint8_t ch, uint16_t us, Telemetry& telemetry) {
+bool MotorController::set_pwm_us(uint8_t ch, uint16_t us, TelemetryRelay& telemetry)
+{
     us = clamp((int)us, 1000, 2000);  // Clamp to safe servo range
     uint16_t ticks = (uint16_t)(us * PCA9685_FREQ * 4096 / 1000000.0f + 0.5f);
 
@@ -80,17 +85,18 @@ bool Act::set_pwm_us(uint8_t ch, uint16_t us, Telemetry& telemetry) {
     return success;
 }
 
-
-void Act::disarm(Telemetry& telemetry) {
+void MotorController::disarm(TelemetryRelay& telemetry) {
     allow_arm = false;
     kill_motors(telemetry);
 }
 
-bool Act::armed() {
+bool MotorController::armed()
+{
     return allow_arm;
 }
 
-bool Act::safety_check(Sense& sense, Receiver& receiver, Telemetry& telemetry) {
+bool MotorController::safety_check(SensorController& sense, RadioReceiver& receiver, TelemetryRelay& telemetry)
+{
     static bool safety_state = true;
     receiver.fail_safe(telemetry, *this);
     allow_arm = receiver.check_switch_armed(*this, telemetry);
@@ -161,8 +167,8 @@ bool Act::safety_check(Sense& sense, Receiver& receiver, Telemetry& telemetry) {
     }
 }
 
-void Act::recovery(Sense& sense, Telemetry& telemetry, Receiver& receiver, float dt) {
-
+void MotorController::recovery(SensorController& sense, TelemetryRelay& telemetry, RadioReceiver& receiver, float dt)
+{
     if (dt <= 0.0f) return;
     // RECOVERY PID LOOP
     
@@ -218,7 +224,7 @@ void Act::recovery(Sense& sense, Telemetry& telemetry, Receiver& receiver, float
     set_pwm_us(3, m3, telemetry);
 }
 
-void Act::m_test(Telemetry& telemetry) {
+void MotorController::m_test(TelemetryRelay& telemetry) {
     set_pwm_us(0, 1100, telemetry);
     telemetry.send_telemetry("M0 now!");
     sleep_ms(2000);

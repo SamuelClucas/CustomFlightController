@@ -1,11 +1,12 @@
-#include "sense.h"
-#include "telemetry.h"
-#include "act.h"
-#include "radio_receiver.h"
+#include "sensorController.h"
+#include "telemetryRelay.h"
+#include "motorController.h"
+#include "radioReceiver.h"
 #include <cmath>
 #include "pico/stdlib.h"
 
-Sense::Sense(Telemetry& telemetry, Act& act) {
+SensorController::SensorController(TelemetryRelay& telemetry, MotorController& mController)
+{
     i2c_init(i2c0, 100000);
     gpio_set_function(SDA_PIN, GPIO_FUNC_I2C);
     gpio_set_function(SCL_PIN, GPIO_FUNC_I2C);
@@ -16,14 +17,12 @@ Sense::Sense(Telemetry& telemetry, Act& act) {
     qmc_ok = 0;
     bmp_ok = 0;
     
-
     sleep_ms(300);
 
-    init_mpu6050(telemetry, act);
+    init_mpu6050(telemetry, mController);
     init_qmc5883();
     init_bmp280();
     mag_yaw = 0.0f;
-
 
     ax=0, ay=0, az=16384, gx=0, gy=0, gz=0;
     accel_roll = atan2f(ay, az) * 180.0f / M_PI;
@@ -32,25 +31,27 @@ Sense::Sense(Telemetry& telemetry, Act& act) {
     roll_angle = 0.0f, pitch_angle = 0.0f, yaw_angle = 0.0f;
 }
 
-Sense::~Sense() {}
+SensorController::~SensorController() {}
 
-int Sense::clamp(int val, int min_val, int max_val) { return val < min_val ? min_val : (val > max_val ? max_val : val); }
-float Sense::clampf(float val, float min_val, float max_val) { return val < min_val ? min_val : (val > max_val ? max_val : val); }
+int SensorController::clamp(int val, int min_val, int max_val) { return val < min_val ? min_val : (val > max_val ? max_val : val); }
+float SensorController::clampf(float val, float min_val, float max_val) { return val < min_val ? min_val : (val > max_val ? max_val : val); }
 
-bool Sense::i2c_write_check(uint8_t addr, uint8_t reg, uint8_t val) {
+bool SensorController::i2c_write_check(uint8_t addr, uint8_t reg, uint8_t val)
+{
     int ret = i2c_write_blocking(i2c0, addr, (uint8_t[]){reg, val}, 2, false);
     if (ret != 2) { return false; }
     
     return true;
 }
-    
-bool Sense::i2c_read_check(uint8_t addr, uint8_t reg, uint8_t* buf, uint8_t len) {
+
+bool SensorController::i2c_read_check(uint8_t addr, uint8_t reg, uint8_t *buf, uint8_t len)
+{
     if (i2c_write_blocking(i2c0, addr, &reg, 1, true) != 1) { return false; }
     if (i2c_read_blocking(i2c0, addr, buf, len, false) != len) { return false; }
     return true;
 }
 
-void Sense::init_qmc5883() {
+void SensorController::init_qmc5883() {
     qmc_ok = i2c_write_check(QMC5883_ADDR, 0x0B, 0x01); // Soft reset
     sleep_ms(10);
     qmc_ok &= i2c_write_check(QMC5883_ADDR, 0x09, 0x1D); // Continuous, 200Hz, 2G, 512 OSR
@@ -58,7 +59,7 @@ void Sense::init_qmc5883() {
 }
 
 
-void Sense::init_mpu6050(Telemetry& telemetry, Act& act) {
+void SensorController::init_mpu6050(TelemetryRelay& telemetry, MotorController& mController) {
     mpu_ok = i2c_write_check(MPU6050_ADDR, 0x6B, 0x00); // Wake up
     mpu_ok &= i2c_write_check(MPU6050_ADDR, 0x1C, 0x00); // Set accel ±2g
     mpu_ok &= i2c_write_check(MPU6050_ADDR, 0x1B, 0x00); // Set gyro ±250dps
@@ -75,7 +76,7 @@ void Sense::init_mpu6050(Telemetry& telemetry, Act& act) {
 
 }
 
-void Sense::init_bmp280() {
+void SensorController::init_bmp280() {
     uint8_t id = 0;
     if (!i2c_read_check(BMP280_ADDR, 0xD0, &id, 1) || id != 0x58) {
         bmp_ok = false;
@@ -86,7 +87,7 @@ void Sense::init_bmp280() {
     i2c_write_check(BMP280_ADDR, 0xF5, 0x20);
     bmp_ok = i2c_write_check(BMP280_ADDR, 0xF4, 0x37);
 
-    // ⬇️ Calibration data read
+    //  Calibration data read
     uint8_t buf[24];
     if (!i2c_read_check(BMP280_ADDR, 0x88, buf, 24)) {
         bmp_ok = false;
@@ -109,7 +110,7 @@ void Sense::init_bmp280() {
 }
 
 
-void Sense::read_bmp(float dt, Telemetry& telemetry) {
+void SensorController::read_bmp(float dt, TelemetryRelay& telemetry) {
     if (!bmp_ok) return;
 
     // Read raw pressure and temperature (6 bytes from 0xF7)
@@ -122,7 +123,7 @@ void Sense::read_bmp(float dt, Telemetry& telemetry) {
     int32_t adc_P = ((int32_t)data[0] << 12) | ((int32_t)data[1] << 4) | (data[2] >> 4);
     int32_t adc_T = ((int32_t)data[3] << 12) | ((int32_t)data[4] << 4) | (data[5] >> 4);
 
-    // You must call compensate_temperature() first to set t_fine
+    // Must call compensate_temperature() first to set t_fine
     float temperature = compensate_temperature(adc_T);  // °C
     float pressure = compensate_pressure(adc_P);        // Pa
 
@@ -143,7 +144,7 @@ void Sense::read_bmp(float dt, Telemetry& telemetry) {
     telemetry.update_telemetry("[Alt]", "%.2f", current_altitude);
 }
 
-float Sense::compensate_temperature(int32_t adc_T) {
+float SensorController::compensate_temperature(int32_t adc_T) {
     int32_t var1 = ((((adc_T >> 3) - ((int32_t)calib.dig_T1 << 1))) * ((int32_t)calib.dig_T2)) >> 11;
     int32_t var2 = (((((adc_T >> 4) - ((int32_t)calib.dig_T1)) * ((adc_T >> 4) - ((int32_t)calib.dig_T1))) >> 12) *
                     ((int32_t)calib.dig_T3)) >> 14;
@@ -151,7 +152,7 @@ float Sense::compensate_temperature(int32_t adc_T) {
     return ((t_fine * 5 + 128) >> 8) / 100.0f;  // Celsius
 }
 
-float Sense::compensate_pressure(int32_t adc_P) {
+float SensorController::compensate_pressure(int32_t adc_P) {
     int64_t var1 = (int64_t)t_fine - 128000;
     int64_t var2 = var1 * var1 * (int64_t)calib.dig_P6;
     var2 += ((var1 * (int64_t)calib.dig_P5) << 17);
@@ -170,18 +171,17 @@ float Sense::compensate_pressure(int32_t adc_P) {
     return (float)p / 256.0f;  // Pascals
 }
 
-float Sense::get_current_altitude(){
+float SensorController::get_current_altitude(){
     return current_altitude;
 }
 
-void Sense::set_ground_altitude(Telemetry& telemetry){
+void SensorController::set_ground_altitude(TelemetryRelay& telemetry){
     ground_altitude = current_altitude;
     telemetry.send_telemetry("Ground altitude set: %.2f", ground_altitude);
-    
 }
 
-
-void Sense::read_mpu6050(float dt, Telemetry& telemetry) {
+void SensorController::read_mpu6050(TelemetryRelay &telemetry, float dt)
+{
     uint8_t buf[14];
     if (!i2c_read_check(MPU6050_ADDR, 0x3B, buf, 14)) mpu_ok = false;
     else {
@@ -224,11 +224,10 @@ void Sense::read_mpu6050(float dt, Telemetry& telemetry) {
     }
 
     telemetry.update_telemetry("[RejectA]", "%d", accel_rejects);
-    telemetry.update_telemetry("[AcceptA]", "%d", accel_uses);    
-    
+    telemetry.update_telemetry("[AcceptA]", "%d", accel_uses);
 }
-    
-void Sense::calibrate_gyro(Act& act, Telemetry& telemetry, float dt) {
+
+void SensorController::calibrate_gyro(Act& act, TelemetryRelay& telemetry, float dt) {
     int32_t gx_sum = 0, gy_sum = 0, gz_sum = 0;
     for (int i = 0; i < GYRO_CALIB_SAMPLES; i++) {
         uint8_t buf[14];
@@ -254,7 +253,7 @@ void Sense::calibrate_gyro(Act& act, Telemetry& telemetry, float dt) {
     telemetry.send_telemetry("[GyroCalib] Roll %.2f Pitch %.2f\n", roll_angle, pitch_angle);
 }
 
-void Sense::update_magnetometer(Telemetry& telemetry) {
+void SensorController::update_magnetometer(TelemetryRelay& telemetry) {
     uint8_t buf[6];
     if (!i2c_read_check(QMC5883_ADDR, 0x00, buf, 6)) {
         qmc_ok = false;
@@ -287,11 +286,9 @@ void Sense::update_magnetometer(Telemetry& telemetry) {
     yaw_angle = 0.98f * yaw_angle + 0.02f * mag_yaw;
 }
 
-
-void Sense::PID_calculations(Receiver& receiver, Act& act, Telemetry& telemetry, float dt) {
-    act.set_allow_arm(receiver.has_recent_data() && act.get_pca_ok() && bmp_ok
-            && fabsf(roll_angle) <= 30.0f
-            && fabsf(pitch_angle) <= 30.0f);
+void SensorController::PID_calculations(Receiver &receiver, MotorController& mController, TelemetryRelay &telemetry, float dt)
+{
+    mController.set_allow_arm(receiver.has_recent_data() && act.get_pca_ok() && bmp_ok && fabsf(roll_angle) <= 30.0f && fabsf(pitch_angle) <= 30.0f);
     if (dt <= 0.0f) return;
     
     throttle_ratio = (receiver.get_throttle() - MIN_THROTTLE) / (float)(MAX_THROTTLE - MIN_THROTTLE);
@@ -326,11 +323,11 @@ void Sense::PID_calculations(Receiver& receiver, Act& act, Telemetry& telemetry,
     int m2 = clamp((throttle + roll_pid - pitch_pid + yaw_pid), MIN_THROTTLE, MAX_THROTTLE); // Front Left CW
     int m3 = clamp((throttle - roll_pid + pitch_pid + yaw_pid), MIN_THROTTLE, MAX_THROTTLE); // Back Right CW
 
-    if(act.armed()){ 
-        act.set_pwm_us(0, m0, telemetry);
-        act.set_pwm_us(1, m1, telemetry);
-        act.set_pwm_us(2, m2, telemetry);
-        act.set_pwm_us(3, m3, telemetry);
+    if(mController.armed()){
+        mController.set_pwm_us(0, m0, telemetry);
+        mController.set_pwm_us(1, m1, telemetry);
+        mController.set_pwm_us(2, m2, telemetry);
+        mController.set_pwm_us(3, m3, telemetry);
         telemetry.send_telemetry("[PWM sent] M0:%d M1:%d M2:%d M3:%d", m0, m1, m2, m3); 
     }
 
@@ -353,12 +350,13 @@ void Sense::PID_calculations(Receiver& receiver, Act& act, Telemetry& telemetry,
     telemetry.update_telemetry("[MagYaw]", "%.2f", mag_yaw);
 }
 
-void Sense::reset_integrals() {
+void SensorController::reset_integrals() {
     roll_integral = pitch_integral = yaw_integral = 0.0f;
     last_roll_error = last_pitch_error = last_yaw_error = 0.0f;
 }
 
-void Sense::update_voltage(Sense& sense, Telemetry& telemetry, Act& act, Receiver& receiver, float dt) {
+void SensorController::update_voltage(TelemetryRelay& telemetry)
+{
     adc_select_input(ADC_VOLTAGE_CH);
     voltage = (adc_read() / 4095.0f * 3.3f) * VOLTAGE_SCALE;
     static bool first_read = 0;
@@ -383,9 +381,8 @@ void Sense::update_voltage(Sense& sense, Telemetry& telemetry, Act& act, Receive
         telemetry.send_telemetry("[Voltage_critical] %.2f\n", filtered_voltage);
         critically_warned = true;
     }
-
 }
 
-bool Sense::get_critically_warned(){
+bool SensorController::get_critically_warned(){
     return critically_warned;
 }

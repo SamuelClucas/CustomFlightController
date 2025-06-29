@@ -11,7 +11,7 @@
 
 #pragma once
 
-class Telemetry {
+class TelemetryRelay {
 private:
     // Add this in telemetry.h
     private:
@@ -19,8 +19,8 @@ private:
 
 
 public:
-    Telemetry();
-    ~Telemetry();
+    TelemetryRelay();
+    ~TelemetryRelay();
     
     void flush_telemetry();
     void update_telemetry(const char* key, const char* fmt, ...);

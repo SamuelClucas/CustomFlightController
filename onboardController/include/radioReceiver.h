@@ -1,14 +1,14 @@
-#include "telemetry.h"
+#pragma once
 
+#include "telemetry.h"
 #include "pico/stdlib.h"
 #include "hardware/uart.h"
 #include "hardware/gpio.h"
 #include <cstdint>
 
-#pragma once
-class Act;
+class MotorController; // forward declaration
 
-class Receiver {
+class RadioReceiver {
 private:
     static constexpr int IBUS_FRAME_SIZE = 32;
     static constexpr int timeout_us = 750000;
@@ -31,8 +31,8 @@ private:
     bool last_switch_state = true;
 
 public:
-    Receiver();
-    ~Receiver();
+    RadioReceiver();
+    ~RadioReceiver();
     bool has_recent_data() const;
 
     void read_ibus();
@@ -48,5 +48,4 @@ public:
     int get_yaw();
 
     int get_channel(int ch);
-
 };
