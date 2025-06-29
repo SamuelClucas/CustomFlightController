@@ -76,6 +76,6 @@ Future versions may include:
 - A minimal dashboard
 
 ## Author 
-Samuel Clucas
-Durham University – BSc Biological Sciences (First Class)
-Incoming MRes – Biomedical Data Science, Imperial College London
+Samuel Clucas 
+Durham University – BSc Biological Sciences (First Class) 
+Incoming MRes – Biomedical Data Science, Imperial College London 
