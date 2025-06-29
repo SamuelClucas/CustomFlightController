@@ -37,10 +37,15 @@ g++ -std=c++17 -pthread main.cpp receiver.cpp -o groundstation
 If telemetry is flowing properly from the drone:
 
 Ground control online...
+
 Receiver state: ONLINE
+
 Successfully opened file descriptor!
+
 Parsing incoming signal...
+
 roll=0.02,pitch=-0.01,yaw=0.03,...
+
 The Receiver class parses key-value telemetry frames and prints them directly with terminal coloring.
 
 ### Integration with Drone Firmware
