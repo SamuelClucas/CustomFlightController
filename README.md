@@ -24,31 +24,7 @@ A video and photo of the flight are available in the lib/ directory (this was a 
 
 Terminal-based real-time telemetry parser and state monitor for autonomous flight experiments
 
-
-## Project Organisation:
-.
-├── include
-│   ├── receiver.h
-│   └── shared_state.h
-├── Makefile
-├── onboardController
-│   ├── CMakeLists.txt
-│   ├── include
-│   │   ├── act.h
-│   │   ├── radio_receiver.h
-│   │   ├── sense.h
-│   │   └── telemetry.h
-│   ├── maiden_flight.md
-│   └── src
-│       ├── act.cpp
-│       ├── main.cpp
-│       ├── radio_receiver.cpp
-│       ├── sense.cpp
-│       └── telemetry.cpp
-├── project_structure.txt
-└── src
-    ├── main.cpp
-    └── receiver.cpp
+See [here](./project_structure.txt) for project 'tree' structure.
 
 
 ### Overview
