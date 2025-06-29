@@ -1,4 +1,11 @@
 ## Custom Flight Controller Firmware 
+| File                   | Description                                                                                                                                                                |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `main.cpp`             | Entry point for the firmware loop. Initializes subsystems, runs pre-flight checks, and manages sensor-actuator cycles during flight.                                       |
+| `motorController.cpp`  | Sends PWM signals to each ESC via PCA9685, converting throttle and PID outputs into stable motor commands.                                                                 |
+| `radioReceiver.cpp`    | Parses input from the radio receiver, translating PPM signals into throttle, roll, pitch, and yaw commands.                                                                |
+| `sensorController.cpp` | Interfaces with the IMU (MPU6050), magnetometer (QMC5883), and barometer (BMP280) to provide fused orientation and altitude data. Handles PID control and safety triggers. |
+| `telemetryRelay.cpp`   | Packages and transmits telemetry data (e.g., voltage, angles, error terms) over UART using a key–value system for live ground station updates.                             |
 
 ## Features 
 Full PID flight control loop using gyroscope, accelerometer, magnetometer, and barometric pressure
