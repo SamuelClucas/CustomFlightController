@@ -53,17 +53,17 @@ Firmware for the embedded flight controller (RP2040). Contains C++ source and he
 
 
 ### Features
-UART serial communication using /dev/ttyUSB0
+- UART serial communication using /dev/ttyUSB0
 
-Real-time telemetry parsing and printing
+- Real-time telemetry parsing and printing
 
-Signal-aware loop with graceful SIGINT interrupt handling
+- Signal-aware loop with graceful SIGINT interrupt handling
 
-Status-based output with ANSI terminal colouring
+- Status-based output with ANSI terminal colouring
 
-Modular Receiver class with persistent state
+- Modular Receiver class with persistent state
 
-Simple multithread-safe control loop via std::atomic<bool>
+- Simple multithread-safe control loop via std::atomic<bool>
 
 
 ### Running the Ground Station
