@@ -5,13 +5,11 @@ I worked on this project between February to early-April 2025. I developed a fas
 
 This repository contains the embedded firmware for a custom quadcopter drone, written in C++ and designed to run on the Raspberry Pi Pico (RP2040) microcontroller. The project was developed as a self-directed systems engineering exercise in low-level control loops, real-time sensor fusion, and telemetry-driven feedback. The firmware was successfully tested on a partially salvaged Holybro S500 V2 frame with custom braided copper power wiring—
 
-<img src="./lib/braids.jpg" width="150" height="200">
+<img src="./lib/braids.jpg" width="125" height="200">
 
 —and custom-built power circuitry:
 
-<img src="./lib/dodgyElectrics.jpg" width="200" height="300">
-
-<img src="./lib/chaos.png" width="300" height="300">
+<img src="./lib/dodgyElectrics.jpg" width="200" height="300"> <img src="./lib/chaos.png" width="300" height="300">
 
 ## Maiden Flight 
 The drone flew untethered during its maiden test before triggering my overtilt-safety cutoff. A short [telemetry log](./lib/maiden_flight.md) is included.
