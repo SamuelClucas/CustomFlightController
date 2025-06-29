@@ -7,6 +7,14 @@
 | `sensorController.cpp` | Interfaces with the IMU (MPU6050), magnetometer (QMC5883), and barometer (BMP280) to provide fused orientation and altitude data. Handles PID control and safety triggers. |
 | `telemetryRelay.cpp`   | Packages and transmits telemetry data (e.g., voltage, angles, error terms) over UART using a key–value system for live ground station updates.                             |
 
+| File                 | Description                                                                                           |
+| -------------------- | ----------------------------------------------------------------------------------------------------- |
+| `motorController.h`  | Header for motor control logic; defines motor mapping and PWM signal control methods.                 |
+| `radioReceiver.h`    | Header defining interface for parsing PPM receiver data into control channels with basic smoothing.   |
+| `sensorController.h` | Declares sensor fusion, orientation estimation, PID tuning logic, safety checks, and telemetry hooks. |
+| `telemetryRelay.h`   | Declares telemetry interface for buffering and relaying key-value telemetry messages over UART.       |
+
+
 ## Features 
 Full PID flight control loop using gyroscope, accelerometer, magnetometer, and barometric pressure
 
