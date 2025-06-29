@@ -1,6 +1,6 @@
 .
 ├── include
-│   ├── amygdala.h
+│   ├── receiver.h
 │   └── shared_state.h
 ├── Makefile
 ├── onboardController
@@ -19,9 +19,7 @@
 │       └── telemetry.cpp
 ├── project_structure.txt
 └── src
-    ├── amygdala.cpp
-    ├── amygdala.o
-    ├── Observer.cpp
-    └── Observer.o
+    ├── main.cpp
+    └── receiver.cpp
 
-6 directories, 19 files
+6 directories, 17 files
