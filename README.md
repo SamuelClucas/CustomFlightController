@@ -1,7 +1,9 @@
 # Engineering a Drone Flight Controller
 I worked on this project between February to early-April 2025. I developed a fascination for embedded programming and set out to implement a perception-to-action flight model on a drone running my own flight controller firmware. While I only managed a single, brief, maiden flight in this time, I learned so much and deeply enjoyed doing so.
 
-[![Watch the maiden flight](./lib/flight_thumb.png)](lib/maiden_flight.mp4) (volume warning!)
+![Watch the maiden flight](./lib/flight_thumb.png)]
+
+(lib/maiden_flight.mp4) (volume warning!)
 
 ## Ground Control Station 
 
