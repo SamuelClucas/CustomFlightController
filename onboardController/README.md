@@ -4,7 +4,7 @@ This repository contains the embedded firmware for a custom quadcopter drone, wr
 
 The drone flew untethered and responded to control input before activating over-tilt safety shutdown protocols.
 
-Features 
+## Features 
 Full PID flight control loop using gyroscope, accelerometer, magnetometer, and barometric pressure
 
 Real-time sensor fusion with basic complementary filtering
@@ -21,23 +21,23 @@ Failsafe disarming and sensor readiness checks
 
 Written using the Raspberry Pi Pico SDK (CMake-based)
 
-Hardware 
+## Hardware 
 MCU: Raspberry Pi Pico
 
-Sensors: 
+*Sensors:* 
 MPU6050 (Accelerometer + Gyroscope)
 
 QMC5883 (Magnetometer)
 
 BMP280 (Barometric Pressure)
 
-Motor Driver: PCA9685 16-channel PWM controller
+*Motor Driver:* PCA9685 16-channel PWM controller
 
-Frame: Holybro S500 V2 (salvaged)
+*Frame:* Holybro S500 V2 (salvaged)
 
-Additional: Custom braided power cables, hand-wired ESCs, 3D-printed mounts
+*Additional:* Power cables braided from salvaged chargers (when needs must!)
 
-Safety Features 
+## Safety Features 
 Automatic disarming if:
 
 Sensor initialization fails
@@ -48,16 +48,16 @@ Roll or pitch exceeds ±30° (over-tilt safety)
 
 Low-voltage detection with UART warnings and failsafe protocols
 
-Telemetry 
-The TelemetryRelay system relays structured messages over UART. This allows real-time visualization or debugging via a connected ground station (e.g., a Raspberry Pi running a terminal app). Each frame contains telemetry values including:
+## Telemetry 
+The TelemetryRelay system relays structured messages over UART. This allows real-time visualization or debugging via a connected ground station (e.g., a Raspberry Pi running a terminal app). Each frame contains telemetry values including: 
 
-Voltage 
-Orientation (roll, pitch, yaw)
-Altitude
-PID error terms and motor outputs
-Sensor error/reject counts
+- Voltage 
+- Orientation (roll, pitch, yaw)
+- Altitude
+- PID error terms and motor outputs
+- Sensor error/reject counts
 
-Status 
+Status  
 - Untethered test flight completed
 ️- Crash occurred due to triggered over-tilt safety
 ️- Ground station (code named Amygdala) is under separate development
