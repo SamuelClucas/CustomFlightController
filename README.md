@@ -1,12 +1,13 @@
-Ground Control Station 
+## Ground Control Station 
+
 Terminal-based real-time telemetry parser and state monitor for autonomous flight experiments
 
-Overview
+### Overview
 This module forms the ground control interface for a custom quadcopter drone project. Written in C++ and designed to run on a Raspberry Pi (or similar Linux-based system), it connects to the drone over UART and interprets live telemetry frames sent from the onboard flight controller (running on a Raspberry Pi Pico).
 
 This implementation prioritizes minimal latency, code transparency, and terminal-friendly feedback. The code was part of a larger embedded systems engineering project that involved custom drone construction, real-time sensor fusion, and manual PCB-level integration.
 
-Features
+### Features
 UART serial communication using /dev/ttyUSB0
 
 Real-time telemetry parsing and printing
@@ -20,16 +21,16 @@ Modular Receiver class with persistent state
 Simple multithread-safe control loop via std::atomic<bool>
 
 
-Running the Ground Station
+### Running the Ground Station
 Make sure your user has permission to access /dev/ttyUSB0 (or appropriate device).
 You can build with:
 
 g++ -std=c++17 -pthread main.cpp receiver.cpp -o groundstation
 ./groundstation
 
-Interrupt with CTRL+C to shut down cleanly.
+#### Interrupt with CTRL+C to shut down cleanly.
 
-Expected Output
+### Expected Output
 If telemetry is flowing properly from the drone:
 
 Ground control online...
@@ -39,17 +40,16 @@ Parsing incoming signal...
 roll=0.02,pitch=-0.01,yaw=0.03,...
 The Receiver class parses key-value telemetry frames and prints them directly with terminal coloring.
 
-Integration with Drone Firmware
-The onboard flight controller sends telemetry frames (e.g., roll, pitch, yaw, altitude, voltage, PID errors) over UART. This station listens, parses, and prints those updates in real time.
+### Integration with Drone Firmware
+The [onboard flight controller](./onboardController/README.md) sends telemetry frames (e.g., roll, pitch, yaw, altitude, voltage, PID errors) over UART. This station listens, parses, and prints those updates in real time.
 
-Future versions may include:
-
-Logging
-Signal quality monitoring
-A minimal dashboard
+Future versions may include: 
+- Logging
+- Signal quality monitoring
+- A minimal dashboard
 
 Maiden Flight
-🛸 The drone flew untethered during its maiden test before triggering an overtilt-safety cutoff. A short telemetry log is included.
+The drone flew untethered during its maiden test before triggering an overtilt-safety cutoff. A short telemetry log is included.
 
 A video and photo of the flight are available in the lib/ directory and can optionally be embedded in the project’s main README.
 
