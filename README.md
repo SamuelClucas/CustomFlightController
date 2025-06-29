@@ -77,5 +77,7 @@ Future versions may include:
 
 ## Author 
 Samuel Clucas 
+
 Durham University – BSc Biological Sciences (First Class) 
+
 Incoming MRes – Biomedical Data Science, Imperial College London 
