@@ -1,3 +1,6 @@
+# Engineering a Drone Flight Controller
+I worked on this project between February to early-April 2025. I developed a fascination for embedded programming and set out to implement a perception-to-action flight model on a drone running my own flight controller firmware. While I only managed a single maiden flight in this time, I learned so much and deeply enjoyed doing so.
+
 ## Ground Control Station 
 
 Terminal-based real-time telemetry parser and state monitor for autonomous flight experiments
@@ -48,12 +51,12 @@ Future versions may include:
 - Signal quality monitoring
 - A minimal dashboard
 
-Maiden Flight
+## Maiden Flight 
 The drone flew untethered during its maiden test before triggering an overtilt-safety cutoff. A short telemetry log is included.
 
-A video and photo of the flight are available in the lib/ directory and can optionally be embedded in the project’s main README.
+A video and photo of the flight are available in the lib/ directory (this was a special moment!).
 
-Author
+## Author 
 Samuel Clucas
 Durham University – BSc Biological Sciences (First Class)
 Incoming MRes – Biomedical Data Science, Imperial College London
