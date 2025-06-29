@@ -24,6 +24,33 @@ A video and photo of the flight are available in the lib/ directory (this was a 
 
 Terminal-based real-time telemetry parser and state monitor for autonomous flight experiments
 
+
+## Project Organisation:
+.
+├── include
+│   ├── receiver.h
+│   └── shared_state.h
+├── Makefile
+├── onboardController
+│   ├── CMakeLists.txt
+│   ├── include
+│   │   ├── act.h
+│   │   ├── radio_receiver.h
+│   │   ├── sense.h
+│   │   └── telemetry.h
+│   ├── maiden_flight.md
+│   └── src
+│       ├── act.cpp
+│       ├── main.cpp
+│       ├── radio_receiver.cpp
+│       ├── sense.cpp
+│       └── telemetry.cpp
+├── project_structure.txt
+└── src
+    ├── main.cpp
+    └── receiver.cpp
+
+
 ### Overview
 This module forms the ground control interface for a custom quadcopter drone project. Written in C++ and designed to run on a Raspberry Pi (or similar Linux-based system), it connects to the drone over UART and interprets live telemetry frames sent from the onboard flight controller (running on a Raspberry Pi Pico).
 
