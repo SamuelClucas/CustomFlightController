@@ -29,6 +29,25 @@ This module forms the ground control interface for a custom quadcopter drone pro
 
 This implementation prioritizes minimal latency, code transparency, and terminal-friendly feedback. The code was part of a larger embedded systems engineering project that involved custom drone construction, real-time sensor fusion, and manual PCB-level integration.
 
+### ./src/
+
+- main.cpp:	Launches the ground control terminal interface. Initializes and supervises the Receiver class, handling graceful shutdown on interrupt. Acts as the entry point for the monitoring software. 
+- receiver.cpp:	Manages serial input via UART (e.g., from the drone). Parses incoming telemetry data at 57600 baud, prints to console with ANSI styling, and handles interrupt signals.
+
+### ./include/ 
+
+- receiver.h	Declares the Receiver class. Encapsulates state management and parsing logic for UART telemetry from the drone. Implements a singleton pattern to coordinate signal handling. 
+- shared_state.h	Shared global state used across modules (e.g., std::atomic<bool> online). Used to communicate shutdown signals across threads safely.
+
+### lib/	
+
+Contains project media, telemetry logs, and photos. Includes a thumbnail image and maiden flight .mp4 for README embedding.
+
+### onboardController/	
+
+Firmware for the embedded flight controller (RP2040). Contains C++ source and headers organized under src/ and include/, with a CMakeLists.txt for building. 
+
+
 ### Features
 UART serial communication using /dev/ttyUSB0
 
