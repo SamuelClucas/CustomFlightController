@@ -1,6 +1,7 @@
+Raw telemetry output from the onboard controller during the maiden flight. PWM values are in microseconds (1000–2000μs range). Periodic state dumps show attitude estimates, PID inputs, and sensor readings at 1Hz. Flight ends with G_OVERTILT safety cutoff.  
 ```
 PWM sent] M0:1287 M1:1287 M2:1287 M3:1287
-[PWM sentM1:1287 M2:1287 M3:1287
+[PWM sent] M1:1287 M2:1287 M3:1287
 [PWM sent] M0:1287 M1:1287 M2:1287 M3:1287
 [PWM sent] M0:1287 M1:1287 M2:1287 M3:1287
 [PWM sent] M0:1287 M1:1287 M2:1287 M3:1287
